@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Formula } from '../types';
 import { classicFormulas } from '../data/tcmData';
-import { formulas } from '../data/formulas';
+import { formulas as realFormulas } from '../data/formulas';
 import { Flame, ShieldAlert, BookOpen, Layers, CheckCircle2, RefreshCw, BarChart2, Plus, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import SafetyBanner from './SafetyBanner';
@@ -13,16 +13,14 @@ interface FormulaDetailProps {
 }
 
 export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom }: FormulaDetailProps) {
+  const allFormulas = [...realFormulas, ...classicFormulas];
+
   // Active selected formula ID for individual display
-  const [selectedId, setSelectedId] = useState(initialFormulaId || classicFormulas[0].id);
+  const [selectedId, setSelectedId] = useState(initialFormulaId || allFormulas[0]?.id);
 
   useEffect(() => {
-    if (initialFormulaId) {
-      setSelectedId(initialFormulaId);
-    }
+    if (initialFormulaId) setSelectedId(initialFormulaId);
   }, [initialFormulaId]);
-
-  const allFormulas = [...classicFormulas, ...formulas];
   const activeFormula = allFormulas.find(f => f.id === selectedId) || allFormulas[0];
   const risk = assessRisk(activeFormula.name + activeFormula.pathology + activeFormula.explanation);
   // Related formulas: same syndromes or same lessonRef
@@ -33,12 +31,12 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
   ).slice(0, 6);
 
   // Notes comparison workbench states
-  const [compareAId, setCompareAId] = useState<string>(classicFormulas[0].id);
-  const [compareBId, setCompareBId] = useState<string>(classicFormulas[1]?.id || classicFormulas[0].id);
+  const [compareAId, setCompareAId] = useState<string>(allFormulas[0].id);
+  const [compareBId, setCompareBId] = useState<string>(allFormulas[1]?.id || allFormulas[0].id);
   const [isComparing, setIsComparing] = useState(false);
 
-  const formulaA = classicFormulas.find(f => f.id === compareAId) || classicFormulas[0];
-  const formulaB = classicFormulas.find(f => f.id === compareBId) || classicFormulas[1] || classicFormulas[0];
+  const formulaA = allFormulas.find(f => f.id === compareAId) || allFormulas[0];
+  const formulaB = allFormulas.find(f => f.id === compareBId) || allFormulas[1] || allFormulas[0];
 
   return (
     <div className="space-y-6" id="formula-root-container">
@@ -80,7 +78,7 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
               </h3>
               
               <div className="space-y-1" id="formulas-list">
-                {classicFormulas.map(f => (
+                {allFormulas.slice(0, 50).map(f => (
                   <button
                     key={f.id}
                     onClick={() => setSelectedId(f.id)}
@@ -281,7 +279,7 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
                 className="bg-white border rounded p-1.5 text-xs font-semibold focus:outline-none focus:border-red-600"
                 id="select-compare-a"
               >
-                {classicFormulas.map(f => (
+                {allFormulas.slice(0, 50).map(f => (
                   <option key={f.id} value={f.id}>{f.name} ({f.source})</option>
                 ))}
               </select>
@@ -297,7 +295,7 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
                 className="bg-white border rounded p-1.5 text-xs font-semibold focus:outline-none focus:border-emerald-600"
                 id="select-compare-b"
               >
-                {classicFormulas.map(f => (
+                {allFormulas.slice(0, 50).map(f => (
                   <option key={f.id} value={f.id}>{f.name} ({f.source})</option>
                 ))}
               </select>

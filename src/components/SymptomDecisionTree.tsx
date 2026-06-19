@@ -110,32 +110,47 @@ export default function SymptomDecisionTree({ onNavigateToFormula }: Props) {
         </div>
       )}
 
-      {/* Common symptoms quick-select */}
+      {/* Common symptoms quick-select: real data from nihaisha */}
       <div className="space-y-2">
         <div className="text-[10px] text-stone-400 font-sans uppercase tracking-wider">
-          常见症状快速辨证：
+          常见症状快速辨证（来自课程资料）：
         </div>
         <div className="flex flex-wrap gap-2">
-          {QUESTIONS.map((q) => (
+          {symptomRoutes.slice(0, 18).map((r) => (
             <button
-              key={q.symptom}
-              onClick={() => {
-                setSelectedSymptom(q.symptom);
-                setSelectedAnswer(null);
-              }}
+              key={r.symptom}
+              onClick={() => handleQuery(r.symptom)}
               className={`text-xs px-3 py-1.5 rounded-lg border transition cursor-pointer font-serif ${
-                selectedSymptom === q.symptom
+                query.includes(r.symptom)
                   ? "bg-bento-accent text-white border-bento-accent"
                   : "bg-bento-bg border-bento-border text-stone-700 hover:border-bento-accent"
               }`}
             >
-              {q.symptom}
+              {r.symptom}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Step-by-step questions */}
+      {/* Step-by-step interactive decision tree */}
+      <div className="text-[10px] text-stone-400 font-sans uppercase tracking-wider mt-4 border-t border-bento-border pt-4">
+        交互式分水岭辨析：
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {QUESTIONS.map((q) => (
+          <button
+            key={q.symptom}
+            onClick={() => { setSelectedSymptom(q.symptom); setSelectedAnswer(null); }}
+            className={`text-xs px-3 py-1.5 rounded-lg border transition cursor-pointer font-serif ${
+              selectedSymptom === q.symptom
+                ? "bg-bento-accent text-white border-bento-accent"
+                : "bg-bento-bg border-bento-border text-stone-700 hover:border-bento-accent"
+            }`}
+          >
+            {q.symptom}
+          </button>
+        ))}
+      </div>
       {activeQuestion && (
         <div className="bg-[#FDF5F5] border border-bento-accent/10 rounded-lg p-4 space-y-3">
           <div className="text-xs font-bold text-bento-accent font-serif">

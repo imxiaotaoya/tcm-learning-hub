@@ -65,9 +65,9 @@ function buildFormulas() {
     if (!hdr) continue;
 
     const hi = hdr.findIndex((c) => c === "方剂" || c.includes("方剂"));
-    const zi = hdr.findIndex((c) => c.includes("课程方证") || c.includes("方证") || c === "主症" || c.includes("主治"));
+    const zi = hdr.findIndex((c) => c.includes("课程方证") || (c.includes("方证") && !c.includes("课")) || c === "主症" || c.includes("主治"));
     const di = hdr.findIndex((c) => c.includes("鉴别") || c.includes("区别"));
-    const li = hdr.findIndex((c) => c.includes("课次") || c.includes("课程"));
+    const li = hdr.findIndex((c) => c === "课次" || (c.includes("课次") && !c.includes("方证")));
     const secName = sec.split("\n")[0].replace(/^#+\s*/, "").trim();
 
     const hi2 = rows.indexOf(hdr);

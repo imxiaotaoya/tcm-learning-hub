@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Chapter, Formula, Herb, Acupoint, Progress, Lesson } from '../types';
-import { tcmChapters, classicFormulas, classicHerbs, classicMeridians } from '../data/tcmData';
-import { Search, BookOpen, Sparkles, Award, FileText, CheckCircle, Flame, ArrowRight, User, Calendar } from 'lucide-react';
+import { classicHerbs, classicMeridians } from '../data/tcmData';
+import { lessons as realLessons } from '../data/lessons';
+import { chapters as realChapters } from '../data/chapters';
+import { formulas as realFormulas } from '../data/formulas';
+import { Search, BookOpen, Sparkles, Award, FileText, CheckCircle, Flame, ArrowRight, Calendar } from 'lucide-react';
 import { motion } from 'motion/react';
 import LearningPathSelector from './LearningPathSelector';
-import { tokenize, translatePlainQuery, suggest } from '../utils/searchEngine';
-import { formulas } from '../data/formulas';
+import { tokenize, translatePlainQuery } from '../utils/searchEngine';
 
 interface StatsDashboardProps {
   progress: Progress;
@@ -41,7 +43,7 @@ export default function StatsDashboard({ progress, onNavigate, onToggleLessonCom
         if (terms.some(t => hay.includes(t)) || hay.toLowerCase().includes(q)) foundLessons.push(l);
       });
     });
-    const allFormulas = [...formulas, ...classicFormulas];
+    const allFormulas = [...realFormulas];
     const foundFormulas = allFormulas.filter(f => {
       const hay = f.name + f.symptoms.join(' ') + f.syndromes.join(' ') + f.pathology + f.explanation;
       return terms.some(t => hay.includes(t)) || hay.toLowerCase().includes(q);
@@ -53,7 +55,13 @@ export default function StatsDashboard({ progress, onNavigate, onToggleLessonCom
   };
   const [plainResults, setPlainResults] = useState<{ type: string; text: string; description: string }[]>([]);
 
-  const totalLessons = tcmChapters.reduce((acc, ch) => acc + ch.lessons.length, 0);
+  // Resolve chapters' lessons from generated data
+  const resolvedChapters: Chapter[] = realChapters.map(ch => ({
+    ...ch,
+    lessons: realLessons.filter(l => l.chapterId === ch.id),
+  }));
+  const tcmChapters = resolvedChapters.length > 0 ? resolvedChapters : [];
+  const totalLessons = realLessons.length;
   const completedLessonsCount = progress.completedLessons.length;
   const progressPercent = totalLessons ? Math.round((completedLessonsCount / totalLessons) * 100) : 0;
 
@@ -284,7 +292,7 @@ export default function StatsDashboard({ progress, onNavigate, onToggleLessonCom
           </div>
           <div className="space-y-1">
             <div className="text-xs text-stone-500 font-medium font-serif">功克方剂</div>
-            <div className="text-lg font-serif font-bold text-bento-ink">{progress.vistedFormulas.length} / {classicFormulas.length} 种</div>
+            <div className="text-lg font-serif font-bold text-bento-ink">{progress.vistedFormulas.length} / {realFormulas.length} 种</div>
             <div className="text-[10px] text-stone-600 font-sans">包含组成、药量与病机</div>
           </div>
         </div>

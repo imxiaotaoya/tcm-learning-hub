@@ -1,4 +1,4 @@
-import { BookOpen, Video, Activity, FileText, Heart, Compass, LayoutDashboard, ChevronLeft, ChevronRight, Image } from 'lucide-react';
+import { BookOpen, Video, Activity, FileText, Heart, Compass, LayoutDashboard, ChevronLeft, ChevronRight, Image, HelpCircle } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -11,6 +11,7 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
   
   const menuItems = [
     { id: 'dashboard', label: '体系总览', icon: LayoutDashboard },
+    { id: 'beginner', label: '小白入门', icon: HelpCircle },
     { id: 'classroom', label: '随堂教室', icon: Video },
     { id: 'formulas', label: '方证对比', icon: Compass },
     { id: 'six-meridians', label: '六经辨证', icon: Activity },

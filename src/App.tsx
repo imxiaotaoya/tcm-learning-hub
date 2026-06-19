@@ -9,6 +9,7 @@ import MeridiansCanvas from './components/MeridiansCanvas';
 import HerbComparison from './components/HerbComparison';
 import NotesManager from './components/NotesManager';
 import ScreenshotBrowser from './components/ScreenshotBrowser';
+import BeginnerEntry from './components/BeginnerEntry';
 import { Menu, BookOpen, Clock, Heart, Award, HelpCircle } from 'lucide-react';
 
 const initialMockNotes: StudyNote[] = [
@@ -89,6 +90,7 @@ export default function App() {
       case 'meridians': return '特定腧穴十四经脉经纬模型';
       case 'herbs': return '本草配伍原理沙箱';
       case 'screenshots': return '课堂板书截图证据索引';
+      case 'beginner': return '中医小白入门 · 白话辨证';
       case 'notes': return '学者随课备忘笔记本';
       default: return '中医方证互动传习录';
     }
@@ -272,6 +274,9 @@ export default function App() {
 
           {/* Screenshot Browser Tab */}
           {activeTab === 'screenshots' && <ScreenshotBrowser />}
+
+          {/* Beginner Entry Tab */}
+          {activeTab === 'beginner' && <BeginnerEntry />}
 
           {/* Scholar Notes Organizer Tab */}
           {activeTab === 'notes' && (
