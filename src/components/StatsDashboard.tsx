@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Chapter, Formula, Herb, Acupoint, Progress, Lesson } from '../types';
 import { tcmChapters, classicFormulas, classicHerbs, classicMeridians } from '../data/tcmData';
-import { Search, BookOpen, Sparkles, Award, FileText, CheckCircle, Flame, ArrowRight, User } from 'lucide-react';
+import { Search, BookOpen, Sparkles, Award, FileText, CheckCircle, Flame, ArrowRight, User, Calendar } from 'lucide-react';
 import { motion } from 'motion/react';
+import LearningPathSelector from './LearningPathSelector';
+import { tokenize, translatePlainQuery, suggest } from '../utils/searchEngine';
+import { formulas } from '../data/formulas';
 
 interface StatsDashboardProps {
   progress: Progress;
@@ -23,55 +26,32 @@ export default function StatsDashboard({ progress, onNavigate, onToggleLessonCom
     setSearchQuery(query);
     if (!query.trim()) {
       setSearchResults({ lessons: [], formulas: [], herbs: [], acupoints: [] });
+      setPlainResults([]);
       return;
     }
-
+    const { translated, results: plainRes } = translatePlainQuery(query);
+    if (translated && plainRes.length > 0) setPlainResults(plainRes);
+    else setPlainResults([]);
+    const terms = tokenize(query);
     const q = query.toLowerCase();
-
-    // 1. Search lessons
     const foundLessons: Lesson[] = [];
     tcmChapters.forEach(ch => {
       ch.lessons.forEach(l => {
-        if (l.title.toLowerCase().includes(q) || l.summary.toLowerCase().includes(q) || l.content.toLowerCase().includes(q)) {
-          foundLessons.push(l);
-        }
+        const hay = l.title + l.summary + l.content + (l.keywords || '');
+        if (terms.some(t => hay.includes(t)) || hay.toLowerCase().includes(q)) foundLessons.push(l);
       });
     });
-
-    // 2. Search formulas
-    const foundFormulas = classicFormulas.filter(f => 
-      f.name.toLowerCase().includes(q) || 
-      f.symptoms.some(s => s.toLowerCase().includes(q)) ||
-      f.syndromes.some(s => s.toLowerCase().includes(q)) ||
-      f.pathology.toLowerCase().includes(q) ||
-      f.composition.some(c => c.herb.toLowerCase().includes(q))
-    );
-
-    // 3. Search herbs
-    const foundHerbs = classicHerbs.filter(h => 
-      h.name.toLowerCase().includes(q) || 
-      h.efficacy.toLowerCase().includes(q) || 
-      h.indications.toLowerCase().includes(q) ||
-      h.taste.some(t => t.toLowerCase().includes(q))
-    );
-
-    // 4. Search acupoints
+    const allFormulas = [...formulas, ...classicFormulas];
+    const foundFormulas = allFormulas.filter(f => {
+      const hay = f.name + f.symptoms.join(' ') + f.syndromes.join(' ') + f.pathology + f.explanation;
+      return terms.some(t => hay.includes(t)) || hay.toLowerCase().includes(q);
+    });
+    const foundHerbs = classicHerbs.filter(h => h.name.toLowerCase().includes(q) || h.efficacy.toLowerCase().includes(q) || h.indications.toLowerCase().includes(q) || h.taste.some(t => t.toLowerCase().includes(q)));
     const foundAcupoints: Acupoint[] = [];
-    classicMeridians.forEach(m => {
-      m.acupoints.forEach(ap => {
-        if (ap.name.toLowerCase().includes(q) || ap.indications.toLowerCase().includes(q) || ap.location.toLowerCase().includes(q)) {
-          foundAcupoints.push(ap);
-        }
-      });
-    });
-
-    setSearchResults({
-      lessons: foundLessons,
-      formulas: foundFormulas,
-      herbs: foundHerbs,
-      acupoints: foundAcupoints
-    });
+    classicMeridians.forEach(m => { m.acupoints.forEach(ap => { if (ap.name.toLowerCase().includes(q) || ap.indications.toLowerCase().includes(q) || ap.location.toLowerCase().includes(q)) foundAcupoints.push(ap); }); });
+    setSearchResults({ lessons: foundLessons.slice(0,8), formulas: foundFormulas.slice(0,8), herbs: foundHerbs.slice(0,8), acupoints: foundAcupoints.slice(0,8) });
   };
+  const [plainResults, setPlainResults] = useState<{ type: string; text: string; description: string }[]>([]);
 
   const totalLessons = tcmChapters.reduce((acc, ch) => acc + ch.lessons.length, 0);
   const completedLessonsCount = progress.completedLessons.length;
@@ -84,6 +64,9 @@ export default function StatsDashboard({ progress, onNavigate, onToggleLessonCom
 
   return (
     <div className="space-y-8" id="stats-dashboard-root">
+      {/* Three-path Learning Selector */}
+      <LearningPathSelector onNavigate={onNavigate} />
+
       {/* Search Header Banner */}
       <div className="relative overflow-hidden bg-bento-paper border border-bento-border rounded-xl p-6 sm:p-10 shadow-xs text-bento-ink" id="search-banner">
         <div className="absolute right-0 top-0 opacity-5 pointer-events-none scale-125 translate-x-12 translate-y-[-20px] font-serif text-[180px] text-bento-accent">
@@ -143,6 +126,18 @@ export default function StatsDashboard({ progress, onNavigate, onToggleLessonCom
               有关键字 "{searchQuery}" 的记录
             </span>
           </div>
+
+          {/* Plain-language translation results */}
+          {plainResults.length > 0 && (
+            <div className="bg-[#F0FDF4] border border-emerald-200 rounded-lg p-4 mb-4">
+              <h3 className="text-xs font-bold text-emerald-800 font-serif mb-2">💡 白话翻译结果：</h3>
+              {plainResults.map((r, i) => (
+                <div key={i} className="text-xs text-emerald-700 font-serif leading-relaxed">
+                  <span className="font-bold">"{r.text}"</span> → {r.description}
+                </div>
+              ))}
+            </div>
+          )}
 
           {!hasResults ? (
             <div className="py-8 text-center text-[#9c9380]" id="search-no-results">
@@ -303,6 +298,47 @@ export default function StatsDashboard({ progress, onNavigate, onToggleLessonCom
             <div className="text-lg font-serif font-bold text-bento-ink">十四经络</div>
             <div className="text-[10px] text-stone-600 font-sans">{classicMeridians.reduce((a, b) => a + b.acupoints.length, 0)} 项核心特定腧穴</div>
           </div>
+        </div>
+      </div>
+
+      {/* Study Streak Heatmap (30-day) */}
+      <div className="bg-bento-paper border border-bento-border rounded-xl p-6 shadow-xs">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-serif text-sm font-bold text-bento-ink flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-bento-accent" />
+            学习热力图 · 近30天
+          </h3>
+          <span className="text-[10px] text-stone-500 font-sans">
+            连续学习 {progress.studyStreak?.consecutiveDays || 0} 天
+          </span>
+        </div>
+        <div className="flex gap-1.5 flex-wrap">
+          {Array.from({ length: 30 }).map((_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - (29 - i));
+            const dateStr = d.toISOString().slice(0, 10);
+            const isToday = i === 29;
+            // Check if this date was a study day (simplified: check if it's in the streak)
+            const inStreak = progress.studyStreak?.consecutiveDays > 0 &&
+              i >= 29 - (progress.studyStreak?.consecutiveDays || 0) + 1;
+            return (
+              <div
+                key={dateStr}
+                title={dateStr}
+                className={`w-4 h-4 rounded-sm transition-all ${
+                  isToday
+                    ? 'border-2 border-bento-accent bg-bento-accent/20'
+                    : inStreak
+                    ? 'bg-bento-accent/80'
+                    : 'bg-stone-200'
+                }`}
+              />
+            );
+          })}
+        </div>
+        <div className="flex justify-between mt-2 text-[9px] text-stone-400 font-sans">
+          <span>30天前</span>
+          <span>今天</span>
         </div>
       </div>
 
