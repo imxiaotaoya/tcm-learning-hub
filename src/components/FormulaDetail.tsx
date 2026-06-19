@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Formula } from '../types';
 import { classicFormulas } from '../data/tcmData';
+import { formulas } from '../data/formulas';
 import { Flame, ShieldAlert, BookOpen, Layers, CheckCircle2, RefreshCw, BarChart2, Plus, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
+import SafetyBanner from './SafetyBanner';
+import { assessRisk } from '../utils/riskRules';
 
 interface FormulaDetailProps {
   initialFormulaId?: string;
@@ -19,7 +22,15 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
     }
   }, [initialFormulaId]);
 
-  const activeFormula = classicFormulas.find(f => f.id === selectedId) || classicFormulas[0];
+  const allFormulas = [...classicFormulas, ...formulas];
+  const activeFormula = allFormulas.find(f => f.id === selectedId) || allFormulas[0];
+  const risk = assessRisk(activeFormula.name + activeFormula.pathology + activeFormula.explanation);
+  // Related formulas: same syndromes or same lessonRef
+  const relatedFormulas = allFormulas.filter(f =>
+    f.id !== activeFormula.id &&
+    (f.syndromes.some(s => activeFormula.syndromes.includes(s)) ||
+     (f.lessonRef && activeFormula.lessonRef && f.lessonRef === activeFormula.lessonRef))
+  ).slice(0, 6);
 
   // Notes comparison workbench states
   const [compareAId, setCompareAId] = useState<string>(classicFormulas[0].id);
@@ -88,8 +99,8 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
 
             {/* Quick Fact on Formula Theory */}
             <div className="bg-bento-paper border border-bento-border rounded-xl p-4 text-xs space-y-2 text-stone-600 leading-relaxed font-serif" id="theory-fact-box">
-              <div className="font-bold text-bento-accent">辨证灵魂：“方证对照”</div>
-              <p>治伤寒，必求“有是证，用是方”。方证相对应，即是一首经方的精准客观指标。如若体表表征与本病提纲百分百吻合，便可凭方投药，效如桴鼓。</p>
+              <div className="font-bold text-bento-accent">辨证灵魂："方证对照"</div>
+              <p>治伤寒，必求"有是证，用是方"。方证相对应，即是一首经方的精准客观指标。如若体表表征与本病提纲百分百吻合，便可凭方投药，效如桴鼓。</p>
             </div>
           </div>
 
@@ -98,6 +109,9 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
             
             <div className="bg-bento-paper border border-bento-border rounded-xl p-6 shadow-xs space-y-6" id="formula-main-card">
               
+              {/* Safety Banner */}
+              <SafetyBanner riskLevel={risk.level} message={risk.message} />
+
               {/* Header Title Information */}
               <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-bento-border pb-4" id="formula-detail-title-block">
                 <div>
@@ -106,8 +120,18 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
                     <span className="text-xs bg-[#FDF5F5] text-bento-accent border border-bento-accent/20 rounded-full px-2.5 py-0.5 font-bold font-serif">
                       出处: {activeFormula.source}
                     </span>
+                    {activeFormula.riskLevel && activeFormula.riskLevel !== 'low' && (
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                        activeFormula.riskLevel === 'high' ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-amber-100 text-amber-700 border border-amber-200'
+                      }`}>
+                        {activeFormula.riskLevel === 'high' ? '⚠ 高风险' : '⚡ 谨慎'}
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-stone-500 mt-1 font-serif font-semibold">归经病位: {activeFormula.syndromes.join('、')}</p>
+                  {activeFormula.lessonRef && (
+                    <p className="text-[10px] text-stone-400 mt-0.5 font-sans">涉及课次: {activeFormula.lessonRef}</p>
+                  )}
                 </div>
 
                 {activeFormula.blackboardId && (
@@ -218,6 +242,26 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
                   {activeFormula.usage}
                 </p>
               </div>
+
+            {/* Related Formulas */}
+            {relatedFormulas.length > 0 && (
+              <div className="border-t border-bento-border pt-4 mt-2">
+                <h4 className="font-serif text-xs font-bold text-bento-ink mb-3 flex items-center gap-1">
+                  <Layers className="w-3.5 h-3.5 text-bento-accent" /> 关联方剂
+                </h4>
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {relatedFormulas.map(rf => (
+                    <button
+                      key={rf.id}
+                      onClick={() => setSelectedId(rf.id)}
+                      className="flex-shrink-0 bg-bento-bg border border-bento-border hover:border-bento-accent rounded-lg px-3 py-2 text-xs font-serif font-bold text-bento-ink transition cursor-pointer"
+                    >
+                      {rf.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             </div>
           </div>
@@ -355,7 +399,7 @@ export default function FormulaDetail({ initialFormulaId, onNavigateToClassroom 
           <div className="bg-[#FAF7F2] border border-[#E9E1CE] p-4 rounded-xl flex items-center justify-between gap-4" id="contrast-tips-banner">
             <div className="text-xs text-stone-600 leading-relaxed max-w-2xl" id="contrast-tips-content">
               <strong className="text-amber-800 font-serif block text-sm mb-1">【比勘学堂指导】：两方同中有异，异中有同。</strong>
-              例如，<strong>桂枝汤</strong>与<strong>麻黄汤</strong>：同属太阳经表证主方。然一为中风表虚（有汗恶风、脉浮缓，治以调营卫拂汗），一为伤寒表实（无汗喘急、身疼骨痛、脉浮紧，治以宣肺发汗）。此即是“方证对应”的核心判别标准。
+              例如，<strong>桂枝汤</strong>与<strong>麻黄汤</strong>：同属太阳经表证主方。然一为中风表虚（有汗恶风、脉浮缓，治以调营卫拂汗），一为伤寒表实（无汗喘急、身疼骨痛、脉浮紧，治以宣肺发汗）。此即是"方证对应"的核心判别标准。
             </div>
             <Plus className="w-5 h-5 text-amber-800 flex-shrink-0 animate-bounce" />
           </div>

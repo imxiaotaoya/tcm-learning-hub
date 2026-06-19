@@ -3,6 +3,7 @@ import { sixMeridianStages } from '../data/tcmData';
 import { SixMeridianStage } from '../types';
 import { Sparkles, Layers, Activity, HelpCircle, ArrowRight, Zap } from 'lucide-react';
 import { motion } from 'motion/react';
+import SymptomDecisionTree from './SymptomDecisionTree';
 
 interface SixMeridiansProps {
   initialStageId?: string;
@@ -351,6 +352,9 @@ export default function SixMeridians({ initialStageId, onNavigateToFormula }: Si
         </div>
 
       </div>
+
+      {/* Symptom Decision Tree */}
+      <SymptomDecisionTree onNavigateToFormula={onNavigateToFormula} />
 
     </div>
   );

@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Lesson, StudyNote, Blackboard } from '../types';
 import { tcmChapters } from '../data/tcmData';
-import { BookOpen, Video, FileText, Plus, Anchor, Layers, MapPin, Sparkles, Check, ArrowRight, ArrowLeft } from 'lucide-react';
+import { lessons as genLessons } from '../data/lessons';
+import { BookOpen, Video, FileText, Plus, Anchor, Layers, MapPin, Sparkles, Check, ArrowRight, ArrowLeft, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ClassroomProps {
@@ -23,9 +24,10 @@ export default function Classroom({
   completedLessons,
   initialActiveItem
 }: ClassroomProps) {
-  // Find current lesson
-  const allLessons = tcmChapters.flatMap(ch => ch.lessons);
-  const [activeLessonId, setActiveLessonId] = useState(currentLessonId || allLessons[0].id);
+  // Find current lesson — merge mock + generated real data
+  const mockLessons = tcmChapters.flatMap(ch => ch.lessons);
+  const allLessons = mockLessons.length > 0 ? mockLessons : genLessons;
+  const [activeLessonId, setActiveLessonId] = useState(currentLessonId || (allLessons[0]?.id || 'l-shanghanlun01'));
 
   useEffect(() => {
     if (initialActiveItem?.lessonId) {
@@ -238,10 +240,20 @@ export default function Classroom({
               <span className="font-bold text-bento-accent block mb-1">随堂重点研学考标：</span>
               <ul className="list-disc pl-4 space-y-1.5 text-stone-600 text-[11px]" id="outline-list">
                 <li>理解太阳中风证因风寒外袭，致使营卫无法相守的病理传变机理。</li>
-                <li>掌握桂枝与芍药等比配伍“解肌发表、酸甘化阴”的经方内涵。</li>
-                <li>熟记服药后“啜热稀粥”促发微汗排汗、顾护中气胃气的调护诀窍。</li>
+                <li>掌握桂枝与芍药等比配伍解肌发表、酸甘化阴的经方内涵。</li>
+                <li>熟记服药后啜热稀粥促发微汗排汗、顾护中气胃气的调护诀窍。</li>
               </ul>
             </div>
+            {activeLesson.keywords && (
+              <div className="bg-bento-accent/5 border border-bento-accent/10 rounded-lg p-4 mt-2">
+                <h4 className="font-serif text-xs font-bold text-bento-accent flex items-center gap-1.5 mb-2">
+                  <HelpCircle className="w-3.5 h-3.5" /> 本课复习关键词
+                </h4>
+                <p className="text-[11px] text-stone-600 leading-relaxed font-serif">
+                  {activeLesson.keywords}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -430,7 +442,7 @@ export default function Classroom({
                     <motion.button
                       onClick={() => {
                         setSelectedAnchorPin(pt.label);
-                        setNoteTitle(`关于板书“${pt.label}”的笔记`);
+                        setNoteTitle(`关于板书"${pt.label}"的笔记`);
                         setNoteContent(`[课堂板书锚点 ${activeBb.timestamp} - ${pt.label}]: ${pt.details}\n我本人的思悟：`);
                         setHighlightedPin(pt.label);
                       }}
@@ -498,7 +510,7 @@ export default function Classroom({
                     type="button"
                     onClick={() => {
                       setSelectedAnchorPin(pt.label);
-                      setNoteTitle(`关于板书“${pt.label}”的笔记`);
+                      setNoteTitle(`关于板书"${pt.label}"的笔记`);
                     }}
                     className={`text-[10px] px-2.5 py-1 rounded transition border font-semibold ${
                       selectedAnchorPin === pt.label
