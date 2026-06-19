@@ -8,6 +8,7 @@ import SixMeridians from './components/SixMeridians';
 import MeridiansCanvas from './components/MeridiansCanvas';
 import HerbComparison from './components/HerbComparison';
 import NotesManager from './components/NotesManager';
+import ScreenshotBrowser from './components/ScreenshotBrowser';
 import { Menu, BookOpen, Clock, Heart, Award, HelpCircle } from 'lucide-react';
 
 const initialMockNotes: StudyNote[] = [
@@ -38,13 +39,27 @@ export default function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<string>('');
 
-  // Learning Progress core state
-  const [progress, setProgress] = useState<Progress>({
-    completedLessons: ['l-1-1'],
-    savedNotes: initialMockNotes,
-    vistedFormulas: ['f-guizhitang'],
-    currentLessonId: 'l-1-1'
-  });
+  // Learning Progress core state (from localStorage or default)
+  const loadProgress = (): Progress => {
+    try {
+      const stored = localStorage.getItem("tcm-learning-hub-progress");
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return {
+      completedLessons: ["l-1-1"],
+      savedNotes: initialMockNotes,
+      vistedFormulas: ["f-guizhitang"],
+      currentLessonId: "l-1-1",
+      studyStreak: { lastStudyDate: new Date().toISOString().slice(0, 10), consecutiveDays: 1 },
+    };
+  };
+
+  const [progress, setProgress] = useState<Progress>(loadProgress);
+
+  // Persist progress to localStorage on every change
+  useEffect(() => {
+    localStorage.setItem("tcm-learning-hub-progress", JSON.stringify(progress));
+  }, [progress]);
 
   // Hotspot anchor router helpers
   const [classroomInitItem, setClassroomInitItem] = useState<{ lessonId?: string; boardId?: string } | undefined>(undefined);
@@ -73,6 +88,7 @@ export default function App() {
       case 'six-meridians': return '伤寒六经气化辨证路线';
       case 'meridians': return '特定腧穴十四经脉经纬模型';
       case 'herbs': return '本草配伍原理沙箱';
+      case 'screenshots': return '课堂板书截图证据索引';
       case 'notes': return '学者随课备忘笔记本';
       default: return '中医方证互动传习录';
     }
@@ -253,6 +269,9 @@ export default function App() {
               onNavigateToFormulas={(fId) => handleNavigate('formulas', { formulaId: fId })}
             />
           )}
+
+          {/* Screenshot Browser Tab */}
+          {activeTab === 'screenshots' && <ScreenshotBrowser />}
 
           {/* Scholar Notes Organizer Tab */}
           {activeTab === 'notes' && (

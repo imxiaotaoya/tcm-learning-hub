@@ -13,6 +13,8 @@ export default function HerbComparison({ initialSearchName, onNavigateToFormulas
   const [searchQuery, setSearchQuery] = useState(initialSearchName || '');
   const [selectedNature, setSelectedNature] = useState<string>('all');
   const [selectedMeridian, setSelectedMeridian] = useState<string>('all');
+  const [selectedTaste, setSelectedTaste] = useState<string>('all');
+  const [efficacySearch, setEfficacySearch] = useState('');
 
   // Interactive Herbal Sandbox Prescription Box
   const [sandboxRx, setSandboxRx] = useState<Herb[]>([]);
@@ -25,8 +27,10 @@ export default function HerbComparison({ initialSearchName, onNavigateToFormulas
     const matchesNature = selectedNature === 'all' || h.nature === selectedNature;
     
     const matchesMeridian = selectedMeridian === 'all' || h.meridians.includes(selectedMeridian);
-    
-    return matchesSearch && matchesNature && matchesMeridian;
+    const matchesTaste = selectedTaste === 'all' || h.taste.includes(selectedTaste as any);
+    const matchesEfficacy = !efficacySearch || h.efficacy.includes(efficacySearch) || h.indications.includes(efficacySearch);
+
+    return matchesSearch && matchesNature && matchesMeridian && matchesTaste && matchesEfficacy;
   });
 
   // Sandbox calculations
@@ -92,6 +96,17 @@ export default function HerbComparison({ initialSearchName, onNavigateToFormulas
           />
         </div>
 
+        {/* Efficacy filter */}
+        <div className="relative w-full md:w-48" id="herb-efficacy-search">
+          <input
+            type="text"
+            placeholder="功效(如:发汗解表)..."
+            value={efficacySearch}
+            onChange={(e) => setEfficacySearch(e.target.value)}
+            className="w-full bg-bento-bg border border-bento-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-bento-accent text-bento-ink"
+          />
+        </div>
+
         {/* Temperature selection dropdown */}
         <div className="flex gap-4 w-full md:w-auto" id="herb-dropdown-grids">
           <div className="flex items-center gap-2 flex-1 md:flex-none">
@@ -120,12 +135,30 @@ export default function HerbComparison({ initialSearchName, onNavigateToFormulas
               id="select-meridian-filter"
             >
               <option value="all">全部经络归属</option>
-              <option value="肺">归肺经 (宣肺平喘)</option>
-              <option value="脾">归脾经 (健脾运水)</option>
-              <option value="胃">归胃经 (胃家积滞)</option>
-              <option value="大肠">归大肠经 (下气攻积)</option>
-              <option value="膀胱">归膀胱经 (太阳外卫)</option>
-              <option value="胆">归胆经 (少阳枢转)</option>
+              <option value="肺">归肺经</option>
+              <option value="脾">归脾经</option>
+              <option value="胃">归胃经</option>
+              <option value="大肠">归大肠经</option>
+              <option value="膀胱">归膀胱经</option>
+              <option value="胆">归胆经</option>
+            </select>
+          </div>
+
+          {/* Taste filter */}
+          <div className="flex items-center gap-2 flex-1 md:flex-none">
+            <span className="text-xs text-stone-500 font-bold whitespace-nowrap">五味:</span>
+            <select
+              value={selectedTaste}
+              onChange={(e) => setSelectedTaste(e.target.value)}
+              className="bg-bento-bg text-bento-ink border border-bento-border rounded text-xs p-1.5 focus:outline-none focus:border-bento-accent flex-1 cursor-pointer"
+              id="select-taste-filter"
+            >
+              <option value="all">全部五味</option>
+              <option value="辛">辛 (发散)</option>
+              <option value="甘">甘 (补益)</option>
+              <option value="酸">酸 (收敛)</option>
+              <option value="苦">苦 (燥湿)</option>
+              <option value="咸">咸 (软坚)</option>
             </select>
           </div>
         </div>

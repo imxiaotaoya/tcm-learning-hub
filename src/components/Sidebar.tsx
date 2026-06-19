@@ -1,4 +1,4 @@
-import { BookOpen, Video, Activity, FileText, Heart, Compass, LayoutDashboard, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, Video, Activity, FileText, Heart, Compass, LayoutDashboard, ChevronLeft, ChevronRight, Image } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -16,6 +16,7 @@ export default function Sidebar({ activeTab, onTabChange, collapsed, onToggleCol
     { id: 'six-meridians', label: '六经辨证', icon: Activity },
     { id: 'meridians', label: '腧穴经络', icon: BookOpen },
     { id: 'herbs', label: '草药性味', icon: Heart },
+    { id: 'screenshots', label: '板书截图', icon: Image },
     { id: 'notes', label: '随堂笔记', icon: FileText },
   ];
 
