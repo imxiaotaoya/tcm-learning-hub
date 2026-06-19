@@ -1,5 +1,15 @@
 import { Chapter, Formula, Herb, Meridian, SixMeridianStage, Blackboard } from '../types';
 
+// ── Data bridge: re-export generated data from nihaisha pipeline ──
+// These override the mock versions below when imported directly.
+// Components should migrate to importing from './formulas', './lessons', etc.
+export { formulas } from './formulas';
+export { lessons } from './lessons';
+export { chapters as tcmChaptersGen } from './chapters';
+export { screenshots } from './screenshots';
+export { sixMeridianStages as sixMeridianStagesGen } from './sixMeridianStages';
+export { symptomRoutes } from './symptomRoutes';
+
 // Mock Blackboard Screenshots representing teacher's chalk writings
 export const mockBlackboards: Blackboard[] = [
   {

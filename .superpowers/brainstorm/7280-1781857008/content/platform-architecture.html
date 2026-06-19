@@ -1,0 +1,232 @@
+<h2>🏛️ 中医学习平台 · 长期架构方案</h2>
+<p class="subtitle">分层解耦，数据驱动，可持续演进</p>
+
+<div class="section">
+  <h3>📐 三层架构</h3>
+</div>
+
+<div class="mockup" style="margin-bottom:1.5rem">
+  <div class="mockup-header">平台分层全景</div>
+  <div class="mockup-body">
+    <table style="width:100%;border-collapse:collapse;text-align:left;font-size:13px">
+      <thead>
+        <tr style="border-bottom:2px solid #ddd">
+          <th style="padding:10px;width:15%">层</th>
+          <th style="padding:10px;width:30%">仓库</th>
+          <th style="padding:10px;width:35%">职责</th>
+          <th style="padding:10px;width:20%">技术</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #eee;background:#FFFDF6">
+          <td style="padding:10px;font-weight:bold;color:#8C3E2B">🖥️ 展示层</td>
+          <td style="padding:10px"><code>tcm-learning-hub</code></td>
+          <td style="padding:10px;font-size:12px">React SPA · 学习交互 · 进度追踪<br>搜索 · 方证 · 六经 · 穴位 · 笔记</td>
+          <td style="padding:10px;font-size:12px">React 19<br>Vite<br>Tailwind CSS</td>
+        </tr>
+        <tr style="border-bottom:1px solid #eee;background:#F8FFF8">
+          <td style="padding:10px;font-weight:bold;color:#2E5C43">🔌 API 层</td>
+          <td style="padding:10px"><code>tcm-api</code> (新增)</td>
+          <td style="padding:10px;font-size:12px">Markdown → JSON 数据管道<br>截图文件服务<br>搜索/分词/索引 API</td>
+          <td style="padding:10px;font-size:12px">Node/Express<br>或 Python/FastAPI</td>
+        </tr>
+        <tr style="border-bottom:1px solid #eee;background:#F8F4FF">
+          <td style="padding:10px;font-weight:bold;color:#5B21B6">📦 数据层</td>
+          <td style="padding:10px"><code>nihaisha-nishi-tcm</code> + 更多</td>
+          <td style="padding:10px;font-size:12px">课程蒸馏 Markdown<br>截图证据索引<br>方证/穴位/药性结构化数据<br>你的个人笔记与标注</td>
+          <td style="padding:10px;font-size:12px">Markdown<br>WebP 截图<br>YAML/JSON</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section" style="margin-top:2rem">
+  <h3>🔄 数据流向</h3>
+</div>
+
+<div class="mockup" style="margin-bottom:1.5rem">
+  <div class="mockup-header">从资料到屏幕</div>
+  <div class="mockup-body">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;text-align:center;font-size:12px">
+      <div style="flex:1;min-width:100px;background:#FFFDF6;border:1px solid #E9DFCA;border-radius:8px;padding:16px">
+        <div style="font-weight:bold;color:#8C3E2B;margin-bottom:6px">📝 Markdown<br>知识文件</div>
+        <div style="font-size:10px;color:#666">nihaisha + 其他<br>课程蒸馏产物</div>
+      </div>
+      <div style="font-size:24px;color:#8C3E2B">→</div>
+      <div style="flex:1;min-width:100px;background:#F8FFF8;border:1px solid #C8E0C8;border-radius:8px;padding:16px">
+        <div style="font-weight:bold;color:#2E5C43;margin-bottom:6px">🔧 构建管道<br>build-pipeline</div>
+        <div style="font-size:10px;color:#666">Markdown Parser<br>→ 结构化 JSON<br>→ 搜索索引</div>
+      </div>
+      <div style="font-size:24px;color:#2E5C43">→</div>
+      <div style="flex:1;min-width:100px;background:#F0F4FF;border:1px solid #C8D0E8;border-radius:8px;padding:16px">
+        <div style="font-weight:bold;color:#4B6BDF;margin-bottom:6px">🌐 API Server<br>/api/*</div>
+        <div style="font-size:10px;color:#666">REST 接口<br>搜索/分页/路由<br>截图静态文件</div>
+      </div>
+      <div style="font-size:24px;color:#4B6BDF">→</div>
+      <div style="flex:1;min-width:100px;background:#FFFDF6;border:1px solid #E9DFCA;border-radius:8px;padding:16px">
+        <div style="font-weight:bold;color:#8C3E2B;margin-bottom:6px">🖥️ React SPA<br>tcm-learning-hub</div>
+        <div style="font-size:10px;color:#666">fetch + SWR<br>客户端路由<br>localStorage 进度</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:2rem">
+  <h3>📂 推荐的仓库结构</h3>
+</div>
+
+<div class="mockup" style="margin-bottom:1.5rem">
+  <div class="mockup-header">GitHub 组织或用户下的 3 个仓库</div>
+  <div class="mockup-body">
+    <pre style="font-size:11px;line-height:1.6;background:#FAF8F5;padding:12px;border-radius:6px;overflow-x:auto">
+imxiaotaoya/
+├── nihaisha-nishi-tcm/          ← 现有，不变（资料层）
+│   ├── references/*.md          知识蒸馏文件
+│   ├── assets/screenshots/      2986 张 WebP
+│   └── scripts/                 截图搜索 & 压缩
+│
+├── tcm-api/                     ← 新增（API 层）
+│   ├── src/
+│   │   ├── parser/              Markdown → JSON 解析器
+│   │   ├── routes/              搜索 / 方证 / 穴位 / 课次 API
+│   │   └── index.ts             Express 入口
+│   ├── data/                    git submodule → nihaisha-nishi-tcm
+│   └── package.json
+│
+└── tcm-learning-hub/            ← 现有，改造（展示层）
+    ├── src/
+    │   ├── components/          8 个现有 + 新增截图浏览器
+    │   ├── data/                轻量缓存 + 类型定义
+    │   ├── hooks/               useSWR API hooks
+    │   └── utils/               searchEngine.ts 等
+    └── .env                     API_BASE_URL=...
+    </pre>
+  </div>
+</div>
+
+<div class="section" style="margin-top:2rem">
+  <h3>🌱 支持扩展的数据层设计</h3>
+</div>
+
+<div class="mockup" style="margin-bottom:1.5rem">
+  <div class="mockup-header">未来可以接入的中医数据源</div>
+  <div class="mockup-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
+      <div style="border:1px dashed #E9DFCA;border-radius:8px;padding:12px;background:#FFFDF6">
+        <div style="font-weight:bold;color:#8C3E2B">✅ 已在规划中</div>
+        <div style="color:#666;margin-top:4px;line-height:1.6">
+          • <strong>nihaisha-nishi-tcm</strong> — 倪海厦全套<br>
+          • <strong>你的个人笔记</strong> — 学习心得与标注<br>
+          • <strong>学习进度</strong> — 课次完成记录
+        </div>
+      </div>
+      <div style="border:1px dashed #D0D9E8;border-radius:8px;padding:12px;background:#F4F6FC">
+        <div style="font-weight:bold;color:#4B6BDF">🔮 可扩展</div>
+        <div style="color:#666;margin-top:4px;line-height:1.6">
+          • <strong>其他讲师课程</strong> — 黄煌、胡希恕、郝万山<br>
+          • <strong>经典原著</strong> — 伤寒论/金匮原文+注家<br>
+          • <strong>现代教材</strong> — 方剂学/中医诊断学<br>
+          • <strong>临床指南</strong> — 经方医案数据库
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:12px;font-size:11px;color:#999">
+      💡 数据层的核心设计：每个数据源是一个独立的文件夹，包含 Markdown + 截图 + metadata.json。
+      构建管道自动扫描所有数据源，合并成统一的 JSON API。
+    </p>
+  </div>
+</div>
+
+<div class="section" style="margin-top:2rem">
+  <h3>⏳ 分阶段落地路径</h3>
+</div>
+
+<div class="mockup" style="margin-bottom:1rem">
+  <div class="mockup-header">不阻塞当前开发，渐进式解耦</div>
+  <div class="mockup-body">
+    <table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px">
+      <thead>
+        <tr style="border-bottom:2px solid #ddd">
+          <th style="padding:8px;width:10%">阶段</th>
+          <th style="padding:8px;width:18%">时间</th>
+          <th style="padding:8px;width:22%">目标</th>
+          <th style="padding:8px;width:50%">做什么</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #eee">
+          <td style="padding:8px;font-weight:bold;color:#8C3E2B">P0 现在</td>
+          <td style="padding:8px;font-size:11px;color:#666">本周</td>
+          <td style="padding:8px;font-size:11px;font-weight:bold">前端功能闭环</td>
+          <td style="padding:8px;font-size:11px;color:#555">数据直接 import 进 React（方案 A 快速），把 8 个必做功能做出来，学习流跑通</td>
+        </tr>
+        <tr style="border-bottom:1px solid #eee;background:#FFFDF6">
+          <td style="padding:8px;font-weight:bold;color:#D97706">P1 过渡</td>
+          <td style="padding:8px;font-size:11px;color:#666">2-3 周后</td>
+          <td style="padding:8px;font-size:11px;font-weight:bold">数据结构化</td>
+          <td style="padding:8px;font-size:11px;color:#555">写 Markdown → JSON 构建脚本，把 nihaisha 的 46 个 MD 解析成结构化数据。前端加 useSWR，先用本地 JSON 文件模拟 API</td>
+        </tr>
+        <tr style="border-bottom:1px solid #eee;background:#F8FFF8">
+          <td style="padding:8px;font-weight:bold;color:#2E5C43">P2 分离</td>
+          <td style="padding:8px;font-size:11px;color:#666">1-2 月后</td>
+          <td style="padding:8px;font-size:11px;font-weight:bold">三层解耦完成</td>
+          <td style="padding:8px;font-size:11px;color:#555">创建 tcm-api 仓库，前端通过 API 拉数据。nihaisha 更新自动同步。开始接入第二个数据源</td>
+        </tr>
+        <tr style="border-bottom:1px solid #eee;background:#F8F4FF">
+          <td style="padding:8px;font-weight:bold;color:#5B21B6">P3 平台</td>
+          <td style="padding:8px;font-size:11px;color:#666">持续</td>
+          <td style="padding:8px;font-size:11px;font-weight:bold">多数据源平台</td>
+          <td style="padding:8px;font-size:11px;color:#555">接入其他讲师/原著/教材。用户系统 + 个人笔记云端同步。多端（Web + 小程序）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section" style="margin-top:2rem">
+  <h3>❓ 两个关键决策需要你定</h3>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="data-format" onclick="toggleSelect(this)">
+    <div class="letter">Q1</div>
+    <div class="content">
+      <h3>数据格式：Markdown 还是结构化 JSON/YAML？</h3>
+      <p>现在 nihaisha 是 Markdown 表格+列表。构建管道可以维持 MD 格式（易编辑）自动解析，也可以要求数据源提供结构化的 JSON/YAML（易查询）。</p>
+      <p style="color:#8C3E2B;font-size:12px;margin-top:6px"><strong>我的建议：</strong>保持 Markdown 为主（人写舒服），构建时转成 JSON 索引。关键结构化数据（方剂参数、穴位坐标）用 YAML frontmatter。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="backend-lang" onclick="toggleSelect(this)">
+    <div class="letter">Q2</div>
+    <div class="content">
+      <h3>API 层用什么语言？</h3>
+      <p>两个选择：</p>
+      <div class="pros-cons" style="margin-top:0.5rem">
+        <div class="pros"><h4>Node.js/Express</h4>
+          <ul>
+            <li>和前端同一个语言栈</li>
+            <li>可以写 TS 共享类型</li>
+            <li>Vite SSR/中间件可以复用</li>
+          </ul>
+        </div>
+        <div class="cons"><h4>Python/FastAPI</h4>
+          <ul>
+            <li>nihaisha 的脚本已经是 Python</li>
+            <li>Markdown 解析生态好</li>
+            <li>后续 AI/LLM 集成方便</li>
+          </ul>
+        </div>
+      </div>
+      <p style="color:#8C3E2B;font-size:12px;margin-top:6px"><strong>听你的。</strong>两种都能做，差别不大。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="repo-org" onclick="toggleSelect(this)">
+    <div class="letter">Q3</div>
+    <div class="content">
+      <h3>仓库组织方式？</h3>
+      <p>三个独立仓库，还是用 Monorepo（一个仓库，packages/ 下分 data / api / web）？</p>
+      <p style="color:#8C3E2B;font-size:12px;margin-top:6px"><strong>我的建议：</strong>三个独立仓库，通过 git submodule 引用数据层。因为 nihaisha 本身是独立项目，不想被合并。Monorepo 等你上手后用 turborepo 切也不晚。</p>
+    </div>
+  </div>
+</div>

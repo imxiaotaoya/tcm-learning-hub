@@ -1,0 +1,98 @@
+<h2>🏗️ 架构决策：前后端一体化 vs 分离？</h2>
+<p class="subtitle">当前两个仓库的现状 &amp; 两条路径的对比</p>
+
+<div class="section">
+  <h3>📦 现有两个仓库</h3>
+</div>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">📚 nihaisha-nishi-tcm（资料层）</div>
+    <div class="mockup-body" style="text-align:left;font-size:13px">
+      <strong>定位：</strong>Agent Skill — 知识蒸馏产物<br><br>
+      <strong>内容：</strong><br>
+      • 46 个 Markdown 参考文件（16,926 行）<br>
+      • 2986 张 WebP 截图（78MB）<br>
+      • 2 个 Python 脚本<br>
+      • 无前端 UI<br><br>
+      <strong>用途：</strong>AI Agent 按需加载的<br>中医课程知识库
+    </div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">🖥️ tcm-learning-hub（展示层）</div>
+    <div class="mockup-body" style="text-align:left;font-size:13px">
+      <strong>定位：</strong>React SPA — 学习前端<br><br>
+      <strong>内容：</strong><br>
+      • 8 个 React 组件（3,741 行 TSX）<br>
+      • 1 个 mock 数据文件（529 行）<br>
+      • Gemini API 已配置但未接入<br><br>
+      <strong>用途：</strong>体系化中医学习的<br>可视化交互界面
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:2rem">
+  <h3>🔀 两条路径选择</h3>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="monorepo" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>单体仓库 · 全栈合一</h3>
+      <p>把 nihaisha 资料 copy 到前端项目里，一个仓库管全部。数据直接 import 进 React，无需网络请求。</p>
+      <div class="pros-cons" style="margin-top:0.75rem">
+        <div class="pros"><h4>Pros</h4>
+          <ul>
+            <li>结构简单，一个 npm install + dev 就能跑</li>
+            <li>数据 import 零延迟</li>
+            <li>不需要部署后端</li>
+            <li>ModelScope Static HTML 直接部署</li>
+          </ul>
+        </div>
+        <div class="cons"><h4>Cons</h4>
+          <ul>
+            <li>仓库变大（78MB 截图 + 源码）</li>
+            <li>资料更新需要重新 build</li>
+            <li>数据和前端紧耦合</li>
+            <li>npm build 时截图跟着打包</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="option" data-choice="split" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>前后分离 · API 驱动</h3>
+      <p>nihaisha 作为数据源，前端通过 API 拉取结构化数据。截图走 CDN/静态文件服务。</p>
+      <div class="pros-cons" style="margin-top:0.75rem">
+        <div class="pros"><h4>Pros</h4>
+          <ul>
+            <li>职责分明，资料库和前端独立演进</li>
+            <li>nihaisha 更新，前端自动同步</li>
+            <li>截图不参与 npm build，保持轻量</li>
+            <li>后期可接入多端（Web + 小程序 + App）</li>
+          </ul>
+        </div>
+        <div class="cons"><h4>Cons</h4>
+          <ul>
+            <li>需要一个简单的后端服务</li>
+            <li>需要额外部署一个 API server</li>
+            <li>离线体验受影响</li>
+            <li>初始工作量更大</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:1.5rem">
+  <div class="label">💡 我的建议</div>
+  <p style="font-size:14px;color:var(--text-secondary,#666)">
+    分两步走：<strong>现在用方案 A（单体）快速交付</strong>——数据静态 import + 截图用路径索引不打包原图。
+    等 8 个必做功能做完、学习流跑通后，<strong>再切到方案 B</strong>——写一个轻量 Python/Node 脚本把 Markdown 转成 JSON API，
+    加一个 Express/FastAPI 做数据 + 截图服务，前端 fetch。这样不耽误当前进度。
+  </p>
+</div>

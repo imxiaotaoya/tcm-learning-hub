@@ -20,6 +20,7 @@ export interface Lesson {
   content: string;
   videoUrl?: string;
   blackboards: Blackboard[];
+  keywords?: string; // 适合检索的问题
 }
 
 export interface Chapter {
@@ -27,7 +28,7 @@ export interface Chapter {
   title: string;
   order: number;
   description: string;
-  lessons: Lesson[];
+  lessons: Lesson[]; // full lessons; use resolveChapters() to populate from IDs
 }
 
 export interface FormulaHerb {
@@ -47,6 +48,8 @@ export interface Formula {
   explanation: string; // 方义详解
   usage: string; // 煎服法
   blackboardId?: string; // Associated blackboard diagram
+  riskLevel?: 'low' | 'medium' | 'high'; // Safety risk tag
+  lessonRef?: string; // 涉及课次如 "L01-L02"
 }
 
 export interface Herb {
@@ -97,11 +100,35 @@ export interface StudyNote {
   content: string;
 }
 
+export interface StudyStreak {
+  lastStudyDate: string;    // ISO date string
+  consecutiveDays: number;  // current streak count
+}
+
 export interface Progress {
   completedLessons: string[]; // Lesson IDs
   savedNotes: StudyNote[];
   vistedFormulas: string[]; // Formula IDs
   currentLessonId?: string;
+  studyStreak: StudyStreak;
+}
+
+/** 症状 → 分水岭 → 方证路由 */
+export interface SymptomRoute {
+  symptom: string;
+  watershed: string;
+  patterns: string[];
+}
+
+/** 截图证据索引条目 */
+export interface ScreenshotEntry {
+  id: string;
+  module: string;        // e.g. "shanghanlun"
+  lesson: string;        // e.g. "伤寒论01"
+  timestamp: string;     // e.g. "12:34"
+  categories: string[];  // e.g. ["方剂方证", "脉诊望诊"]
+  description: string;
+  path: string;          // relative path to webp
 }
 
 export interface SixMeridianStage {

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>中医学习平台 — 设计全景 + 功能覆盖分析</title>
+<style>
+  :root {
+    --bg: #F7F4EE; --paper: #FDFAF5; --accent: #8C3E2B; --ink: #2D2A24;
+    --border: #E5DFD0; --green: #2E5C43; --amber: #D97706; --purple: #6B3FA0;
+    --red: #C23C27; --blue: #3B6BDF; --tag-bg: #FDF5F5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: serif; line-height:1.6; padding: 40px 20px; }
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  h1 { font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+  h2 { font-size: 1.35rem; font-weight: 700; margin: 2rem 0 0.8rem; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+  h3 { font-size: 1.05rem; font-weight: 700; margin: 1.2rem 0 0.5rem; color: var(--accent); }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 1.5rem; }
+
+  /* Cards */
+  .card { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+
+  /* Gap table */
+  table { width:100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; background: #F0EBE0; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #555; border-bottom: 2px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid #F0EBE0; vertical-align: top; }
+  tr:hover td { background: #FFFDF7; }
+
+  /* Badges */
+  .badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.3px; }
+  .badge-must { background: #FDF5F5; color: #C23C27; border: 1px solid #F5C8C4; }
+  .badge-high { background: #FFF8EB; color: #D97706; border: 1px solid #F5D89A; }
+  .badge-mid { background: #F4F6FC; color: #3B6BDF; border: 1px solid #C8D5F5; }
+  .badge-low { background: #F0F0F0; color: #777; border: 1px solid #DDD; }
+
+  .pct { font-size: 24px; font-weight: 800; }
+  .pct-high { color: #C23C27; } .pct-mid { color: #D97706; } .pct-low { color: #2E5C43; }
+
+  /* Gauge bar */
+  .gauge { width: 100%; height: 8px; background: #E9E5DE; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+  .gauge-fill { height: 100%; border-radius: 4px; }
+  .gauge-red { background: var(--red); } .gauge-amber { background: var(--amber); } .gauge-green { background: var(--green); } .gauge-blue { background: var(--blue); }
+
+  /* Priority blocks */
+  .priority-block { border-left: 4px solid var(--accent); padding: 16px 20px; margin-bottom: 16px; background: var(--paper); border-radius: 0 8px 8px 0; }
+  .priority-block.p-red { border-color: #C23C27; } .priority-block.p-amber { border-color: #D97706; } .priority-block.p-blue { border-color: #3B6BDF; } .priority-block.p-gray { border-color: #BBB; }
+
+  /* Two columns */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+  /* Summary num cards */
+  .num-card { background: var(--paper); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
+  .num-card .num { font-size: 2.5rem; font-weight: 900; color: var(--accent); }
+  .num-card .lbl { font-size: 11px; color: #888; margin-top: 4px; }
+
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .tag { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 10px; background: var(--tag-bg); color: var(--accent); border:1px solid #F5C8C4; }
+
+  hr { border: none; border-top: 1px dashed var(--border); margin: 2rem 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🏛️ 中医方证互动传习系统</h1>
+<p class="subtitle">设计说明书可视化 · 功能全景覆盖分析 · 2026-06-19</p>
+
+<!-- ======== SECTION: SUMMARY ======== -->
+<div class="grid3" style="margin-bottom:24px">
+  <div class="num-card"><div class="num">17</div><div class="lbl">功能全景规划总数</div></div>
+  <div class="num-card"><div class="num">5</div><div class="lbl">已实现 / 部分实现</div></div>
+  <div class="num-card"><div class="num">12</div><div class="lbl">待实现 / 完全缺失</div></div>
+</div>
+
+<div class="grid3" style="margin-bottom:24px">
+  <div class="num-card"><div class="num" style="font-size:1.5rem">8 必做</div><div class="lbl">本期全部交付</div></div>
+  <div class="num-card"><div class="num" style="font-size:1.5rem">3 新增</div><div class="lbl">组件文件</div></div>
+  <div class="num-card"><div class="num" style="font-size:1.5rem">8 改造</div><div class="lbl">现有文件</div></div>
+</div>
+
+<!-- ======== SECTION: GAP ANALYSIS ======== -->
+<h2>📊 功能全景 — 覆盖矩阵</h2>
+
+<table>
+<thead>
+<tr>
+  <th style="width:4%">#</th>
+  <th style="width:16%">功能</th>
+  <th style="width:8%">优先级</th>
+  <th style="width:8%">当前完整度</th>
+  <th style="width:18%">现状</th>
+  <th style="width:18%">本期改造</th>
+  <th style="width:12%">重要性</th>
+  <th style="width:16%">为什么重要</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+  <td>1</td>
+  <td><strong>全局智能搜索</strong></td>
+  <td><span class="badge badge-must">🔴 必做</span></td>
+  <td><span class="pct pct-high">40%</span></td>
+  <td style="font-size:12px">Dashboard 有简单关键词搜索，但不支持中文分词、白话翻译、自动补全</td>
+  <td style="font-size:12px">新建 searchEngine.ts<br>方名正则+60术语词典+20条白话映射+加权评分+自动补全</td>
+  <td style="font-weight:900;color:#C23C27">致命级</td>
+  <td style="font-size:11px;color:#666">无法搜索就无法找到方证。搜索是用户第一入口</td>
+</tr>
+
+<tr>
+  <td>2</td>
+  <td><strong>课程体系总览+多入口导航</strong></td>
+  <td><span class="badge badge-must">🔴 必做</span></td>
+  <td><span class="pct pct-mid">50%</span></td>
+  <td style="font-size:12px">有章节时间线，但只有一种入口（按顺序学）</td>
+  <td style="font-size:12px">新建 LearningPathSelector<br>三入口：按顺序/按六经/按症状</td>
+  <td style="font-weight:900;color:#C23C27">致命级</td>
+  <td style="font-size:11px;color:#666">没有多入口，不同学习目标的用户找不到路</td>
+</tr>
+
+<tr>
+  <td>3</td>
+  <td><strong>方证详情页</strong></td>
+  <td><span class="badge badge-must">🔴 必做</span></td>
+  <td><span class="pct pct-mid">50%</span></td>
+  <td style="font-size:12px">有组成/症状/病机/方义/煎服法/AB对比，缺风险标签、关联方、课次引用</td>
+  <td style="font-size:12px">加 riskLevel+SafetyBanner+关联方横向滚动+课次引用模块</td>
+  <td style="font-weight:900;color:#C23C27">致命级</td>
+  <td style="font-size:11px;color:#666">核心学习页，缺安全标注=重大责任风险</td>
+</tr>
+
+<tr>
+  <td>4</td>
+  <td><strong>六经辨证交互图</strong></td>
+  <td><span class="badge badge-must">🔴 必做</span></td>
+  <td><span class="pct pct-low">80%</span></td>
+  <td style="font-size:12px">SVG 传变图+六经详情卡片已较完整</td>
+  <td style="font-size:12px">加症状分水岭交互决策树</td>
+  <td style="font-weight:900;color:#C23C27">致命级</td>
+  <td style="font-size:11px;color:#666">六经是伤寒论骨架，缺症状路由=学不会辨证</td>
+</tr>
+
+<tr style="background:#FFFDF7">
+  <td>5</td>
+  <td><strong>截图/板书浏览器</strong></td>
+  <td><span class="badge badge-must">🔴 必做</span></td>
+  <td><span class="pct pct-high">10%</span></td>
+  <td style="font-size:12px;color:#C23C27;font-weight:700">几乎没有。Classroom 内只有硬编码 4 个 SVG 黑板</td>
+  <td style="font-size:12px"><strong>全新 ScreenshotBrowser 组件</strong><br>11个模块Tab+6726条索引+标签筛选+Lightbox</td>
+  <td style="font-weight:900;color:#C23C27">致命级</td>
+  <td style="font-size:11px;color:#666">2986张板书截图是项目最独特资产，完全没展示</td>
+</tr>
+
+<tr>
+  <td>6</td>
+  <td><strong>逐课学习页面</strong></td>
+  <td><span class="badge badge-must">🔴 必做</span></td>
+  <td><span class="pct pct-mid">45%</span></td>
+  <td style="font-size:12px">Classroom 框架对，但数据是 mock（6 课 529 行），黑板是硬编码 SVG</td>
+  <td style="font-size:12px">接入 lesson-map 真实15课数据+复习问题区+黑板数据驱动</td>
+  <td style="font-weight:900;color:#C23C27">致命级</td>
+  <td style="font-size:11px;color:#666">没有真实课程数据=空壳。学习者没法按课学</td>
+</tr>
+
+<tr>
+  <td>7</td>
+  <td><strong>学习进度追踪</strong></td>
+  <td><span class="badge badge-must">🔴 必做</span></td>
+  <td><span class="pct pct-high">30%</span></td>
+  <td style="font-size:12px">有完成计数+笔记计数，但只存内存不持久化</td>
+  <td style="font-size:12px">localStorage 持久化+学习热力图+侧边栏百分比</td>
+  <td style="font-weight:900;color:#C23C27">致命级</td>
+  <td style="font-size:11px;color:#666">没持久化=每次刷新全部丢失。体系化学习前提</td>
+</tr>
+
+<tr style="background:#FFFDF7">
+  <td>8</td>
+  <td><strong>安全边界提示系统</strong></td>
+  <td><span class="badge badge-must">🔴 必做</span></td>
+  <td><span class="pct pct-high">5%</span></td>
+  <td style="font-size:12px;color:#C23C27;font-weight:700">几乎没有。只有零星散落的安全文案</td>
+  <td style="font-size:12px"><strong>全新 SafetyBanner 组件</strong>+RISK_RULES 触发规则+集成到4个核心页面</td>
+  <td style="font-weight:900;color:#C23C27">致命级</td>
+  <td style="font-size:11px;color:#666">没有系统安全提醒=可能误导用户自我用药。nihaisha SKILL.md 反复强调</td>
+</tr>
+
+<tr>
+  <td>9</td>
+  <td><strong>穴位经络交互图</strong></td>
+  <td><span class="badge badge-high">🟡 高优</span></td>
+  <td><span class="pct pct-low">75%</span></td>
+  <td style="font-size:12px">SVG 人体模型+穴位散点+详情卡片已有</td>
+  <td style="font-size:12px">本期不做，已在 P1 路线图中</td>
+  <td style="font-weight:900;color:#D97706">重要</td>
+  <td style="font-size:11px;color:#666">已基本可用，优化可延后</td>
+</tr>
+
+<tr>
+  <td>10</td>
+  <td><strong>药性对照表</strong></td>
+  <td><span class="badge badge-high">🟡 高优</span></td>
+  <td><span class="pct pct-low">70%</span></td>
+  <td style="font-size:12px">可筛选表格+配伍沙盒已较完整</td>
+  <td style="font-size:12px">五味筛选+功效关键词搜索</td>
+  <td style="font-weight:900;color:#D97706">重要</td>
+  <td style="font-size:11px;color:#666">基础上已好，差数据量和筛选维度</td>
+</tr>
+
+<tr>
+  <td>11</td>
+  <td><strong>方证对比视图</strong></td>
+  <td><span class="badge badge-high">🟡 高优</span></td>
+  <td><span class="pct pct-low">80%</span></td>
+  <td style="font-size:12px">AB 并排对比已实现，交互完善</td>
+  <td style="font-size:12px">本期不做，已足够好</td>
+  <td style="font-weight:900;color:#D97706">重要</td>
+  <td style="font-size:11px;color:#666">已接近完成，无需改造</td>
+</tr>
+
+<tr>
+  <td>12</td>
+  <td><strong>笔记系统</strong></td>
+  <td><span class="badge badge-high">🟡 高优</span></td>
+  <td><span class="pct pct-low">70%</span></td>
+  <td style="font-size:12px">板书锚定+双向跳转已实现</td>
+  <td style="font-size:12px">导出 Markdown</td>
+  <td style="font-weight:900;color:#D97706">重要</td>
+  <td style="font-size:11px;color:#666">基础上好，补导出闭环</td>
+</tr>
+
+<tr>
+  <td>13</td>
+  <td><strong>暗色模式</strong></td>
+  <td><span class="badge badge-high">🟡 高优</span></td>
+  <td><span class="pct pct-high">0%</span></td>
+  <td style="font-size:12px">完全没有</td>
+  <td style="font-size:12px">P1 路线图，本期暂不做</td>
+  <td style="font-weight:900;color:#D97706">重要</td>
+  <td style="font-size:11px;color:#666">长期学习体验关键，但不阻塞学习流</td>
+</tr>
+
+<tr style="background:#F8F4FF">
+  <td>14</td>
+  <td><strong>AI 对话助手</strong></td>
+  <td><span class="badge badge-low">🟢 低优</span></td>
+  <td><span class="pct pct-high">0%</span></td>
+  <td style="font-size:12px;color:#6B3FA0">@google/genai 已装但零代码接入</td>
+  <td style="font-size:12px">P2 路线图，整体数据层搞好后再接入</td>
+  <td style="font-weight:900;color:#6B3FA0">锦上添花</td>
+  <td style="font-size:11px;color:#666">Gemini key 已在.env，但需要先有结构化数据才能有效回答</td>
+</tr>
+
+<tr style="background:#F8F4FF">
+  <td>15</td>
+  <td><strong>知识关系图谱</strong></td>
+  <td><span class="badge badge-mid">🟢 中优</span></td>
+  <td><span class="pct pct-high">0%</span></td>
+  <td style="font-size:12px">完全没有</td>
+  <td style="font-size:12px">P2 路线图，需要 D3/Cytoscape</td>
+  <td style="font-weight:900;color:#3B6BDF">有价值</td>
+  <td style="font-size:11px;color:#666">方证关系+经络穴位可视化需要大量数据支撑</td>
+</tr>
+
+<tr style="background:#F8F4FF">
+  <td>16</td>
+  <td><strong>测验/闪卡</strong></td>
+  <td><span class="badge badge-mid">🟢 中优</span></td>
+  <td><span class="pct pct-high">0%</span></td>
+  <td style="font-size:12px">完全没有</td>
+  <td style="font-size:12px">P2 路线图</td>
+  <td style="font-weight:900;color:#3B6BDF">有价值</td>
+  <td style="font-size:11px;color:#666">方证数据齐全后自动生成题目才有意义</td>
+</tr>
+
+<tr style="background:#F8F4FF">
+  <td>17</td>
+  <td><strong>PWA 离线</strong></td>
+  <td><span class="badge badge-high">🟡 高优</span></td>
+  <td><span class="pct pct-high">0%</span></td>
+  <td style="font-size:12px">完全没有</td>
+  <td style="font-size:12px">P1 路线图</td>
+  <td style="font-weight:900;color:#D97706">重要</td>
+  <td style="font-size:11px;color:#666">离线学习体验，但不阻塞核心功能</td>
+</tr>
+
+</tbody>
+</table>
+
+<hr>
+
+<!-- ======== SECTION: HOW BAD IS IT? ======== -->
+<h2>🚨 紧迫度评估</h2>
+
+<div class="grid3" style="margin-bottom:20px">
+  <div class="num-card" style="border-color:#C23C27; border-width:2px">
+    <div class="num" style="color:#C23C27">8</div>
+    <div class="lbl">必做功能</div>
+    <div style="font-size:11px;color:#888;margin-top:4px">本期全部补齐</div>
+  </div>
+  <div class="num-card" style="border-color:#D97706; border-width:2px">
+    <div class="num" style="color:#D97706">3</div>
+    <div class="lbl">致命缺失（完整度&lt;20%）</div>
+    <div style="font-size:11px;color:#888;margin-top:4px">截图浏览器 / 安全系统 / 数据层</div>
+  </div>
+  <div class="num-card" style="border-color:#2E5C43; border-width:2px">
+    <div class="num" style="color:#2E5C43">34%</div>
+    <div class="lbl">8 个必做项当前平均完整度</div>
+    <div style="font-size:11px;color:#888;margin-top:4px">距可用还差 ~66% 的工作量</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>致命缺失 TOP 3</h3>
+  <table>
+    <thead><tr><th>缺失</th><th>影响</th><th>本期对策</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:900;color:#C23C27">数据层 = 0</td>
+        <td style="font-size:12px">529行 mock vs 16926行真实数据。前端是空壳，所有组件都跑在假数据上</td>
+        <td style="font-size:12px"><strong>Task 1:</strong> buildData.ts 管道 — 46个MD → TypeScript</td>
+      </tr>
+      <tr>
+        <td style="font-weight:900;color:#C23C27">无安全系统</td>
+        <td style="font-size:12px">用户可能把课程方证当成处方建议自行用药。附子类、四逆汤辈没有警示</td>
+        <td style="font-size:12px"><strong>Task 2:</strong> SafetyBanner + RISK_RULES — 系统化安全标签</td>
+      </tr>
+      <tr>
+        <td style="font-weight:900;color:#C23C27">2986张截图不可见</td>
+        <td style="font-size:12px">项目最独特的板书证据完全不可用。用户看不到任何课程画面</td>
+        <td style="font-size:12px"><strong>Task 8:</strong> ScreenshotBrowser — 6726条索引可检索浏览</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr>
+
+<!-- ======== SECTION: SPEC SUMMARY ======== -->
+<h2>📋 本期改造方案速览</h2>
+
+<div class="priority-block p-red">
+  <h3 style="margin-top:0">Task 1 · 数据管道</h3>
+  <p style="font-size:13px;color:#555">新建 <code>scripts/buildData.ts</code>，读取 nihaisha Markdown（formula-patterns / lesson-map / symptom-index / screenshot-evidence 等 46 个文件），正则解析表格和列表，产出 8 个 TS 数据文件。跑在 <code>npm run build</code> 前。</p>
+  <div class="tag-row"><span class="tag">全数据基础</span><span class="tag">46 MD→TS</span><span class="tag">先做</span></div>
+</div>
+
+<div class="priority-block p-red">
+  <h3 style="margin-top:0">Task 2-3 · 基础设施</h3>
+  <p style="font-size:13px;color:#555"><strong>types.ts</strong> 加 riskLevel / streak / SymptomRoute 字段。<strong>searchEngine.ts</strong> 新建分词+白话翻译+加权评分引擎。<strong>SafetyBanner.tsx</strong> 新建风险横幅组件。</p>
+  <div class="tag-row"><span class="tag">types扩展</span><span class="tag">searchEngine</span><span class="tag">SafetyBanner</span></div>
+</div>
+
+<div class="priority-block p-red">
+  <h3 style="margin-top:0">Task 4-7 · 核心学习页改造</h3>
+  <p style="font-size:13px;color:#555"><strong>StatsDashboard</strong>（搜索升级+热力图+路径选择器）→ <strong>FormulaDetail</strong>（风险标签+关联方+课次引用）→ <strong>Classroom</strong>（真实15课数据+复习问题）→ <strong>SixMeridians</strong>（症状分水岭决策树）</p>
+  <div class="tag-row"><span class="tag">入口页</span><span class="tag">方证页</span><span class="tag">教室页</span><span class="tag">六经页</span></div>
+</div>
+
+<div class="priority-block p-amber">
+  <h3 style="margin-top:0">Task 8 · 截图浏览器（全新）</h3>
+  <p style="font-size:13px;color:#555">新建 <strong>ScreenshotBrowser</strong> — 11 个模块 Tab、6726 条索引网格、标签筛选（方名/穴位/六经/病机）、Lightbox 懒加载。Sidebar 加 Tab 入口。</p>
+  <div class="tag-row"><span class="tag">全新组件</span><span class="tag">独立可并行</span></div>
+</div>
+
+<div class="priority-block p-blue">
+  <h3 style="margin-top:0">Task 9-10 · 收尾增强</h3>
+  <p style="font-size:13px;color:#555"><strong>HerbComparison</strong>（五味+功效筛选）→ <strong>NotesManager</strong>（导出 MD）→ <strong>Sidebar</strong>（模块百分比）→ <strong>App.tsx</strong>（localStorage 持久化 + LearningPathSelector 集成）</p>
+  <div class="tag-row"><span class="tag">筛选增强</span><span class="tag">导出笔记</span><span class="tag">持久化</span></div>
+</div>
+
+<hr>
+
+<!-- ======== SECTION: WHAT STAYS / WHAT GETS DONE LATER ======== -->
+<div class="grid2">
+  <div class="card">
+    <h3 style="margin-top:0">✅ 本期做完</h3>
+    <div style="font-size:12px;line-height:1.8;color:#555">
+      • 数据管道（46 MD → TS）<br>
+      • 全局智能搜索 + 白话翻译<br>
+      • 三入口学习路径选择器<br>
+      • 方证详情页（风险+关联方+引用）<br>
+      • 六经症状分水岭决策树<br>
+      • 真实15课数据 + 复习问题<br>
+      • 截图浏览器（6726条索引）<br>
+      • 安全警示系统<br>
+      • localStorage 持久化 + 热力图<br>
+      • 侧边栏模块百分比<br>
+      • 药性五味筛选<br>
+      • 笔记导出 Markdown
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">🔮 P1 / P2（后续）</h3>
+    <div style="font-size:12px;line-height:1.8;color:#555">
+      • 暗色模式<br>
+      • PWA 离线支持<br>
+      • AI 对话助手（@google/genai）<br>
+      • 知识关系图谱（D3/Cytoscape）<br>
+      • 测验/闪卡模式<br>
+      • 学习计划生成器<br>
+      • 术语悬停词典<br>
+      • 后端 API 层（方案B 切换）<br>
+      • 多数据源接入<br>
+      • 用户系统 + 云端同步
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ======== SECTION: BEFORE/AFTER ======== -->
+<h2>📈 改造前后对比</h2>
+
+<div class="grid2">
+  <div class="card" style="border-color:#DDD; opacity:0.85">
+    <h3 style="margin-top:0;color:#999">改造前（v0.1.0 当前）</h3>
+    <div style="font-size:12px;line-height:1.8;color:#888">
+      • 529 行 mock 数据（4方6药6课）<br>
+      • 关键词 .includes() 简单搜索<br>
+      • 无安全警示系统<br>
+      • 无截图浏览<br>
+      • 进度只存内存，刷新即丢<br>
+      • 黑板硬编码 4 个 SVG<br>
+      • 无白话翻译<br>
+      • 无学习路径选择器<br>
+      • 课程数据 fake
+    </div>
+  </div>
+  <div class="card" style="border-color:#2E5C43; border-width:2px">
+    <h3 style="margin-top:0;color:#2E5C43">改造后（v0.2.0 目标）</h3>
+    <div style="font-size:12px;line-height:1.8;color:#2E5C43">
+      • ~2000+ 行真实数据（40+方100+药15+课6726截图索引）<br>
+      • 中文分词+白话翻译+加权评分搜索<br>
+      • SafetyBanner 系统化（RISK_RULES 触发）<br>
+      • ScreenshotBrowser（11模块Tab+标签筛选）<br>
+      • localStorage 持久化+热力图<br>
+      • 黑板数据驱动，支持真实截图引用<br>
+      • 20+ 条白话症状→方证映射<br>
+      • 三入口学习路径选择器<br>
+      • lesson-map 真实15课数据
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
