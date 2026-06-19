@@ -52,15 +52,15 @@ export default function NotesManager({ notes, onDeleteNote, onNavigateToClassroo
           <FileText className="w-6 h-6 text-bento-accent" />
           中医随堂备忘笔记本 &amp; 教学板书高精定位
         </h1>
-        <p className=”text-xs text-stone-500 font-serif”>
-          统筹记录您在每堂课所撰写的经典考证笔记。支持点击”视频定音板书锚准点”一键双向跳回对应讲义与黑板板目。
+        <p className="text-xs text-stone-500 font-serif">
+          统筹记录您在每堂课所撰写的经典考证笔记。支持点击"视频定音板书锚准点"一键双向跳回对应讲义与黑板板目。
         </p>
         {filteredNotes.length > 0 && (
           <button
             onClick={handleExportMD}
-            className=”mt-2 bg-bento-paper border border-bento-border hover:border-bento-accent rounded-lg px-3 py-1.5 text-[10px] font-bold text-bento-ink flex items-center gap-1.5 transition cursor-pointer”
+            className="mt-2 bg-bento-paper border border-bento-border hover:border-bento-accent rounded-lg px-3 py-1.5 text-[10px] font-bold text-bento-ink flex items-center gap-1.5 transition cursor-pointer"
           >
-            <Download className=”w-3.5 h-3.5 text-bento-accent” /> 导出 Markdown
+            <Download className="w-3.5 h-3.5 text-bento-accent" /> 导出 Markdown
           </button>
         )}
       </div>
