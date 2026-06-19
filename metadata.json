@@ -1,0 +1,6 @@
+{
+  "name": "中医方证互动传习系统",
+  "description": "一套专为中医学习设计的多维交互前端系统，包含六经辨证交互图、穴位经络可视化、逐课学习与笔记/板书锚点同步协作系统。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Noto Serif SC", "Ma Shan Zheng", ui-serif, Georgia, Cambria, serif;
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  --color-bento-bg: #F5F2ED;
+  --color-bento-ink: #1A1A1A;
+  --color-bento-accent: #8B0000;
+  --color-bento-border: #D4CFC7;
+  --color-bento-paper: #FFFFFF;
+}
+
+/* Base style resets to align with Bento theme */
+body {
+  background-color: #F5F2ED;
+  color: #1A1A1A;
+  font-family: "Noto Serif SC", Georgia, serif;
+}
+
+/* Custom scrollbars for scholar books and dashboard */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F2ED;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D4CFC7;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8B0000;
+}
+
+/* chalkboard animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(139, 0, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(139, 0, 0, 0);
+  }
+}
+
+.flash-ring {
+  animation: pulseGlow 1.8s infinite;
+}
+
+/* Bento-specific utility classes */
+.bento-card {
+  background: #FFFFFF;
+  border: 1px solid #D4CFC7;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.bento-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.accent-title {
+  color: #8B0000;
+  font-weight: 700;
+  border-left: 4px solid #8B0000;
+  padding-left: 8px;
+  margin-bottom: 12px;
+  font-family: "Noto Serif SC", serif;
+}
+
